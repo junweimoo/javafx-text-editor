@@ -1,7 +1,5 @@
 import java.io.IOException;
 import java.net.MalformedURLException;
-import java.net.URL;
-import java.util.ResourceBundle.Control;
 
 import javafx.application.Application;
 import javafx.fxml.FXMLLoader;
