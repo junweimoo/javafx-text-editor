@@ -8,11 +8,14 @@ import java.io.IOException;
 import java.net.URL;
 import java.util.ResourceBundle;
 
+import javafx.event.EventHandler;
 import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
 import javafx.scene.control.TextArea;
 import javafx.stage.FileChooser;
 import javafx.stage.Stage;
+import javafx.scene.input.KeyCode;
+import javafx.scene.input.KeyEvent;
 import javafx.stage.FileChooser.ExtensionFilter;
 
 public class Controller implements Initializable{
@@ -21,6 +24,7 @@ public class Controller implements Initializable{
   private Stage stage;
   private FileChooser fileChooser;
   private File openFile;
+  private int fontSize;
 
   @Override
   public void initialize(URL location, ResourceBundle resources) {
@@ -29,6 +33,30 @@ public class Controller implements Initializable{
     ExtensionFilter extensionFilter = new ExtensionFilter("Text files (*.txt)", "*.txt");
     fileChooser.getExtensionFilters().add(extensionFilter);
     fileChooser.setInitialFileName("*.txt");
+
+    initTextArea();
+  }
+
+  private void initTextArea() {this.fontSize = 12;
+    increaseFont();
+
+    textArea.setOnKeyPressed(new EventHandler<KeyEvent>() {
+      @Override
+      public void handle(KeyEvent event) {
+        if (event.isControlDown()) {
+          switch (event.getCode()) {
+            case EQUALS:
+              increaseFont();
+              break;
+            case MINUS:
+              decreaseFont();
+              break;
+            default:
+              
+          }
+        }
+      }
+    });
   }
 
   public void setStage(Stage stage) {
@@ -101,5 +129,19 @@ public class Controller implements Initializable{
     } catch (IOException e) {
 
     }
+  }
+
+  @FXML
+  public void increaseFont() {
+    fontSize += 4;
+    String styleStr = "-fx-font-size: " + fontSize + "px";
+    textArea.setStyle(styleStr);
+  }
+
+  @FXML
+  public void decreaseFont() {
+    fontSize -= 4;
+    String styleStr = "-fx-font-size: " + fontSize + "px";
+    textArea.setStyle(styleStr);
   }
 }

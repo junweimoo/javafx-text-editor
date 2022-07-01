@@ -1,0 +1,31 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import java.net.*?>
+<?import javafx.geometry.*?>
+<?import javafx.scene.control.*?>
+<?import javafx.scene.layout.*?>
+<?import javafx.scene.text.*?>
+
+<BorderPane prefHeight="400.0" prefWidth="600.0" xmlns="http://javafx.com/javafx/8.0.121" xmlns:fx="http://javafx.com/fxml" fx:controller="Controller">
+  <top>
+    <MenuBar>
+      <Menu text="File">
+        <MenuItem onAction="#open" text="Open"/>
+        <MenuItem onAction="#save" text="Save"/>
+        <MenuItem onAction="#saveas" text="Save As"/>
+      </Menu>
+      <Menu text="Edit">
+
+      </Menu>
+      <Menu text="View">
+        <Menu text = "Size">
+          <MenuItem onAction="#increaseFont" text="Zoom In"/>
+          <MenuItem onAction="#decreaseFont" text="Zoom Out"/>
+        </Menu>
+      </Menu>
+    </MenuBar>
+  </top>
+  <center>
+    <TextArea fx:id="textArea" wrapText="true"></TextArea>
+  </center>
+</BorderPane>
