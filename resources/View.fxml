@@ -5,7 +5,8 @@
 <?import javafx.scene.control.*?>
 <?import javafx.scene.layout.*?>
 <?import javafx.scene.text.*?>
-<?import org.fxmisc.richtext.InlineCssTextArea?>
+<?import org.fxmisc.richtext.CodeArea?>
+<?import org.fxmisc.flowless.VirtualizedScrollPane?>
 
 <BorderPane prefHeight="400.0" prefWidth="600.0" xmlns="http://javafx.com/javafx/8.0.121" xmlns:fx="http://javafx.com/fxml" fx:controller="ViewController">
   <top>
@@ -27,6 +28,10 @@
     </MenuBar>
   </top>
   <center>
-    <InlineCssTextArea fx:id="textArea"></InlineCssTextArea>
+    <VirtualizedScrollPane>
+      <content>
+        <CodeArea fx:id="textArea" wrapText="true" />
+      </content>
+    </VirtualizedScrollPane>
   </center>
 </BorderPane>

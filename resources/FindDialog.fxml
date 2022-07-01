@@ -13,7 +13,7 @@
     <VBox spacing="5.0">
       <HBox spacing="5.0">
         <TextField fx:id="searchTextField"/>
-        <Button onAction="#findText" text="Find"/>
+        <Button onAction="#findText" text="Find Next"/>
         <Button onAction="#findAllText" text="Find All"/>
       </HBox>
       <HBox>

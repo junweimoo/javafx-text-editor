@@ -10,7 +10,10 @@ import java.util.List;
 import java.util.Map;
 import java.util.ResourceBundle;
 
+import org.fxmisc.flowless.VirtualizedScrollPane;
+import org.fxmisc.richtext.CodeArea;
 import org.fxmisc.richtext.InlineCssTextArea;
+import org.fxmisc.richtext.StyleClassedTextArea;
 
 import javafx.event.EventHandler;
 import javafx.fxml.FXML;
@@ -21,6 +24,7 @@ import javafx.scene.control.DialogPane;
 import javafx.scene.control.TextArea;
 import javafx.scene.control.TextField;
 import javafx.stage.FileChooser;
+import javafx.stage.Modality;
 import javafx.stage.Stage;
 import javafx.stage.Window;
 import javafx.scene.input.KeyEvent;
@@ -28,12 +32,13 @@ import javafx.stage.FileChooser.ExtensionFilter;
 
 public class ViewController implements Initializable{
   @FXML
-  private InlineCssTextArea textArea;
+  private CodeArea textArea;
   private Stage stage;
   private FileChooser fileChooser;
   private File openFile;
   private Map<String, Parent> modulesMap;
   private int fontSize;
+  private VirtualizedScrollPane scrollPane;
 
   private Dialog<String> findDialog;
   @FXML
@@ -78,8 +83,12 @@ public class ViewController implements Initializable{
     findDialog.setDialogPane(pane);
     findDialog.setTitle("Find Text");
 
-    Window window = pane.getScene().getWindow();
-    window.setOnCloseRequest(event -> window.hide());
+    Stage window = (Stage) pane.getScene().getWindow();
+    window.setAlwaysOnTop(true);
+    window.setOnCloseRequest(event -> {
+      window.hide();
+    });
+    findDialog.initModality(Modality.NONE);
   }
 
   public void setStage(Stage stage) {
@@ -210,7 +219,7 @@ public class ViewController implements Initializable{
 
   public void highlightAllText(List<Integer> indices, int length) {
     for (int i : indices) {
-      textArea.setStyle(i, i + length, "-rtfx-background-color: lightgreen;");
+      // textArea.setStyle(i, i + length, "-rtfx-background-color: lightgreen;");
     }
   }
 }
