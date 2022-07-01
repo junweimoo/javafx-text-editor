@@ -6,6 +6,8 @@ import java.io.FileReader;
 import java.io.FileWriter;
 import java.io.IOException;
 import java.net.URL;
+import java.util.Collection;
+import java.util.Collections;
 import java.util.List;
 import java.util.Map;
 import java.util.ResourceBundle;
@@ -15,6 +17,9 @@ import org.fxmisc.richtext.CodeArea;
 import org.fxmisc.richtext.InlineCssTextArea;
 import org.fxmisc.richtext.LineNumberFactory;
 import org.fxmisc.richtext.StyleClassedTextArea;
+import org.fxmisc.richtext.model.StyleSpan;
+import org.fxmisc.richtext.model.StyleSpans;
+import org.fxmisc.richtext.model.StyleSpansBuilder;
 
 import javafx.event.EventHandler;
 import javafx.fxml.FXML;
@@ -90,6 +95,7 @@ public class ViewController implements Initializable{
     window.setAlwaysOnTop(true);
     window.setOnCloseRequest(event -> {
       window.hide();
+      textArea.clearStyle(0, textArea.getLength());
     });
     findDialog.initModality(Modality.NONE);
   }
@@ -221,8 +227,14 @@ public class ViewController implements Initializable{
   }
 
   public void highlightAllText(List<Integer> indices, int length) {
+    textArea.clearStyle(0, textArea.getLength());
+    StyleSpansBuilder<Collection<String>> spansBuilder = new StyleSpansBuilder<>();
+    int prev = 0;
     for (int i : indices) {
-      // textArea.setStyle(i, i + length, "-rtfx-background-color: lightgreen;");
+      spansBuilder.add(Collections.emptyList(), i - prev);
+      spansBuilder.add(Collections.singleton("found-text"), length);
+      prev = i + length;
     }
+    textArea.setStyleSpans(0, spansBuilder.create());
   }
 }
