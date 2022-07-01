@@ -30,7 +30,7 @@
   <center>
     <VirtualizedScrollPane>
       <content>
-        <CodeArea fx:id="textArea" wrapText="true" />
+        <CodeArea fx:id="textArea" wrapText="false" />
       </content>
     </VirtualizedScrollPane>
   </center>

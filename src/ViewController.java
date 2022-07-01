@@ -13,6 +13,7 @@ import java.util.ResourceBundle;
 import org.fxmisc.flowless.VirtualizedScrollPane;
 import org.fxmisc.richtext.CodeArea;
 import org.fxmisc.richtext.InlineCssTextArea;
+import org.fxmisc.richtext.LineNumberFactory;
 import org.fxmisc.richtext.StyleClassedTextArea;
 
 import javafx.event.EventHandler;
@@ -75,6 +76,8 @@ public class ViewController implements Initializable{
         }
       }
     });
+
+    textArea.setParagraphGraphicFactory(LineNumberFactory.get(textArea));
   }
 
   private void initFindDialog() {
