@@ -10,11 +10,15 @@
   <header>
   </header>
   <content>
-    <HBox spacing="5.0">
-      <TextField fx:id="searchTextField">
-        
-      </TextField>
-      <Button onAction="#findText" text="Find"/>
-    </HBox>
+    <VBox spacing="5.0">
+      <HBox spacing="5.0">
+        <TextField fx:id="searchTextField"/>
+        <Button onAction="#findText" text="Find"/>
+        <Button onAction="#findAllText" text="Find All"/>
+      </HBox>
+      <HBox>
+        <Text fx:id="infoText"></Text>
+      </HBox>
+    </VBox>
   </content>
 </DialogPane>

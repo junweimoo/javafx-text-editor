@@ -5,6 +5,7 @@
 <?import javafx.scene.control.*?>
 <?import javafx.scene.layout.*?>
 <?import javafx.scene.text.*?>
+<?import org.fxmisc.richtext.InlineCssTextArea?>
 
 <BorderPane prefHeight="400.0" prefWidth="600.0" xmlns="http://javafx.com/javafx/8.0.121" xmlns:fx="http://javafx.com/fxml" fx:controller="ViewController">
   <top>
@@ -26,6 +27,6 @@
     </MenuBar>
   </top>
   <center>
-    <TextArea fx:id="textArea" wrapText="true"></TextArea>
+    <InlineCssTextArea fx:id="textArea"></InlineCssTextArea>
   </center>
 </BorderPane>

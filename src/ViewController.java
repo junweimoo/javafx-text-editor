@@ -6,8 +6,11 @@ import java.io.FileReader;
 import java.io.FileWriter;
 import java.io.IOException;
 import java.net.URL;
+import java.util.List;
 import java.util.Map;
 import java.util.ResourceBundle;
+
+import org.fxmisc.richtext.InlineCssTextArea;
 
 import javafx.event.EventHandler;
 import javafx.fxml.FXML;
@@ -25,7 +28,7 @@ import javafx.stage.FileChooser.ExtensionFilter;
 
 public class ViewController implements Initializable{
   @FXML
-  private TextArea textArea;
+  private InlineCssTextArea textArea;
   private Stage stage;
   private FileChooser fileChooser;
   private File openFile;
@@ -181,18 +184,33 @@ public class ViewController implements Initializable{
   }
 
   public int findNextAndHighlight(String searchStr, int indexFrom) {
+    int index = findNext(searchStr, indexFrom);
+
+    if (index != -1) {
+      textArea.selectRange(index, index + searchStr.length());
+      return index + searchStr.length();
+    } else {
+      return -1;
+    }
+  }
+
+  public int findNext(String searchStr, int indexFrom) {
     int index = textArea.getText().indexOf(searchStr, indexFrom);
 
     if (index != -1) { // found
-      textArea.selectRange(index, index + searchStr.length());
-      return index + searchStr.length();
+      return index;
     } else if (indexFrom != -1) { // reached last match
       indexFrom = -1;
       index = textArea.getText().indexOf(searchStr, indexFrom);
-      textArea.selectRange(index, index + searchStr.length());
-      return index + searchStr.length();
+      return index;
     } else { // not found
       return -1; 
+    }
+  }
+
+  public void highlightAllText(List<Integer> indices, int length) {
+    for (int i : indices) {
+      textArea.setStyle(i, i + length, "-rtfx-background-color: lightgreen;");
     }
   }
 }
