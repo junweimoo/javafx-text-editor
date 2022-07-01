@@ -6,7 +6,7 @@
 <?import javafx.scene.layout.*?>
 <?import javafx.scene.text.*?>
 
-<BorderPane prefHeight="400.0" prefWidth="600.0" xmlns="http://javafx.com/javafx/8.0.121" xmlns:fx="http://javafx.com/fxml" fx:controller="Controller">
+<BorderPane prefHeight="400.0" prefWidth="600.0" xmlns="http://javafx.com/javafx/8.0.121" xmlns:fx="http://javafx.com/fxml" fx:controller="ViewController">
   <top>
     <MenuBar>
       <Menu text="File">
@@ -15,7 +15,7 @@
         <MenuItem onAction="#saveas" text="Save As"/>
       </Menu>
       <Menu text="Edit">
-
+        <MenuItem onAction="#showFindText" text="Find"/>
       </Menu>
       <Menu text="View">
         <Menu text = "Size">

@@ -1,0 +1,20 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import java.net.*?>
+<?import javafx.geometry.*?>
+<?import javafx.scene.control.*?>
+<?import javafx.scene.layout.*?>
+<?import javafx.scene.text.*?>
+
+<DialogPane xmlns="http://javafx.com/javafx/8.0.121" xmlns:fx="http://javafx.com/fxml" fx:controller="FindDialogController">
+  <header>
+  </header>
+  <content>
+    <HBox spacing="5.0">
+      <TextField fx:id="searchTextField">
+        
+      </TextField>
+      <Button onAction="#findText" text="Find"/>
+    </HBox>
+  </content>
+</DialogPane>
