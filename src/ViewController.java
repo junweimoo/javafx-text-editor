@@ -13,17 +13,13 @@ import javafx.event.EventHandler;
 import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
 import javafx.scene.Parent;
-import javafx.scene.Scene;
-import javafx.scene.control.Button;
 import javafx.scene.control.Dialog;
 import javafx.scene.control.DialogPane;
 import javafx.scene.control.TextArea;
 import javafx.scene.control.TextField;
 import javafx.stage.FileChooser;
-import javafx.stage.Popup;
 import javafx.stage.Stage;
 import javafx.stage.Window;
-import javafx.scene.input.KeyCode;
 import javafx.scene.input.KeyEvent;
 import javafx.stage.FileChooser.ExtensionFilter;
 
@@ -77,6 +73,7 @@ public class ViewController implements Initializable{
     findDialog = new Dialog<>();
     DialogPane pane = (DialogPane) modulesMap.get("findDialog");
     findDialog.setDialogPane(pane);
+    findDialog.setTitle("Find Text");
 
     Window window = pane.getScene().getWindow();
     window.setOnCloseRequest(event -> window.hide());
@@ -183,7 +180,19 @@ public class ViewController implements Initializable{
     findDialog.showAndWait();
   }
 
-  public void findAndHighlight(String searchStr) {
-    System.out.println(searchStr);
+  public int findNextAndHighlight(String searchStr, int indexFrom) {
+    int index = textArea.getText().indexOf(searchStr, indexFrom);
+
+    if (index != -1) { // found
+      textArea.selectRange(index, index + searchStr.length());
+      return index + searchStr.length();
+    } else if (indexFrom != -1) { // reached last match
+      indexFrom = -1;
+      index = textArea.getText().indexOf(searchStr, indexFrom);
+      textArea.selectRange(index, index + searchStr.length());
+      return index + searchStr.length();
+    } else { // not found
+      return -1; 
+    }
   }
 }

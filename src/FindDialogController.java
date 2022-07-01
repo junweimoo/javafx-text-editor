@@ -9,10 +9,11 @@ public class FindDialogController implements Initializable {
   @FXML
   private TextField searchTextField;
   private ViewController viewController;
+  private int searchIndex;
 
   @Override
   public void initialize(URL location, ResourceBundle resources) {
-
+    searchIndex = -1;
   }
 
   public void setViewController(ViewController viewController) {
@@ -22,6 +23,9 @@ public class FindDialogController implements Initializable {
   @FXML
   public void findText() {
     String searchText = searchTextField.getText();
-    viewController.findAndHighlight(searchText);
+    searchIndex = viewController.findNextAndHighlight(searchText, searchIndex);
+    if (searchIndex == -1) {
+      
+    }
   }
 }
