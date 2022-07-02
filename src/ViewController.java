@@ -10,7 +10,6 @@ import java.util.Collection;
 import java.util.Map;
 import java.util.ResourceBundle;
 
-import org.fxmisc.flowless.Virtualized;
 import org.fxmisc.flowless.VirtualizedScrollPane;
 import org.fxmisc.richtext.CodeArea;
 import org.fxmisc.richtext.LineNumberFactory;
@@ -20,9 +19,13 @@ import javafx.event.EventHandler;
 import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
 import javafx.scene.Parent;
+import javafx.scene.control.Alert;
+import javafx.scene.control.Button;
+import javafx.scene.control.ButtonType;
 import javafx.scene.control.Dialog;
 import javafx.scene.control.DialogPane;
 import javafx.scene.control.TextField;
+import javafx.scene.control.Alert.AlertType;
 import javafx.stage.FileChooser;
 import javafx.stage.Modality;
 import javafx.stage.Stage;
@@ -89,6 +92,7 @@ public class ViewController implements Initializable{
     DialogPane pane = (DialogPane) modulesMap.get("findDialog");
     findDialog.setDialogPane(pane);
     findDialog.setTitle("Find Text");
+    findDialog.initModality(Modality.NONE);
 
     Stage window = (Stage) pane.getScene().getWindow();
 
@@ -110,7 +114,6 @@ public class ViewController implements Initializable{
       window.hide();
       textArea.clearStyle(0, textArea.getLength());
     });
-    findDialog.initModality(Modality.NONE);
   }
 
   public void setStage(Stage stage) {
@@ -121,6 +124,33 @@ public class ViewController implements Initializable{
     this.modulesMap = map;
 
     initFindDialog();
+  }
+
+  @FXML void newFile() {
+    if (textArea.getLength() > 0) {
+      Alert alert = new Alert(
+        AlertType.CONFIRMATION,
+        "Save the current file?",
+        ButtonType.YES,
+        ButtonType.NO,
+        ButtonType.CANCEL
+      );
+
+      alert.showAndWait();
+      ButtonType result = alert.getResult();
+
+      if (result == ButtonType.YES) {
+        save();
+      } 
+      if (result == ButtonType.NO) {
+
+      }
+      if (result == ButtonType.CANCEL) {
+        return;
+      }
+    }
+    textArea.clear();
+    stage.setTitle("New File");
   }
 
   @FXML 

@@ -12,6 +12,7 @@
   <top>
     <MenuBar>
       <Menu text="File">
+        <MenuItem onAction="#newFile" text="New File"/>
         <MenuItem onAction="#open" text="Open"/>
         <MenuItem onAction="#save" text="Save"/>
         <MenuItem onAction="#saveas" text="Save As"/>
