@@ -87,6 +87,9 @@ public class ViewController implements Initializable {
             case S:
               save();
               break;
+            case T:
+              tabsBarController.addTab();
+              break;
             default:
           }
         }
@@ -193,7 +196,6 @@ public class ViewController implements Initializable {
     if (openFile == null) {
       saveas();
     } else {
-      // System.out.println(openFile.getName());
       try {
         FileWriter fw = new FileWriter(openFile);
         BufferedWriter out = new BufferedWriter(fw);

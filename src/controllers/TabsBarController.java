@@ -14,6 +14,8 @@ import javafx.collections.ObservableList;
 import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
 import javafx.scene.control.Button;
+import javafx.scene.control.ToggleButton;
+import javafx.scene.control.ToggleGroup;
 import javafx.scene.layout.HBox;
 
 public class TabsBarController implements Initializable {
@@ -22,6 +24,8 @@ public class TabsBarController implements Initializable {
   private ObservableList<String> tabNames;
   private Map<String, CodeArea> tabsMap;
   private ViewController viewController;
+  private ToggleGroup toggleGroup;
+  private String activeTab;
 
   @Override
   public void initialize(URL url, ResourceBundle resources) {
@@ -36,10 +40,16 @@ public class TabsBarController implements Initializable {
     tabNames.addListener(new ListChangeListener<String>() {
       @Override
       public void onChanged(ListChangeListener.Change<? extends String> change) {
-        updateTabs();
+        buildTabs();
       }
     });
 
+    toggleGroup = new ToggleGroup();
+    toggleGroup.selectedToggleProperty().addListener((obs, oldVal, newVal) -> {
+      if (newVal == null) oldVal.setSelected(true);
+    });
+
+    activeTab = "New File 1";
     tabsMap.put("New File 1", viewController.getTextArea());
     tabNames.add("New File 1");
   }
@@ -52,18 +62,21 @@ public class TabsBarController implements Initializable {
       newFileNumber++;
     }
     String newFileName = "New File " + newFileNumber;
+    activeTab = newFileName;
     tabsMap.put(newFileName, newTextArea);
     tabNames.add(newFileName);
     switchTab(newFileName);
   }
 
   public void addTab(String fileName, CodeArea textArea) {
+    activeTab = fileName;
     tabsMap.put(fileName, textArea);
     tabNames.add(fileName);
     switchTab(fileName);
   }
 
   public void updateTabName(String oldName, String newName) {
+    activeTab = newName;
     CodeArea oldTextArea = tabsMap.remove(oldName);
     tabsMap.put(newName, oldTextArea);
     for (int i = 0; i < tabNames.size(); i++) {
@@ -74,16 +87,18 @@ public class TabsBarController implements Initializable {
         break;
       }
     }
-    updateTabs();
+    buildTabs();
   }
 
-  private void updateTabs() {
+  private void buildTabs() {
     tabsBar.getChildren().clear();
     for (String tabName : tabNames) {
-      Button tabButton = new Button(tabName);
+      ToggleButton tabButton = new ToggleButton(tabName);
       tabButton.setOnAction((e) -> {
         switchTab(tabName);
       });
+      tabButton.setToggleGroup(toggleGroup);
+      if (tabName.equals(activeTab)) tabButton.setSelected(true);
       tabsBar.getChildren().add(tabButton);
     }
     Button addTabButton = new Button("+");
@@ -94,6 +109,7 @@ public class TabsBarController implements Initializable {
   }
 
   private void switchTab(String tabName) {
+    activeTab = tabName;
     CodeArea nextTextArea = tabsMap.get(tabName);
     viewController.switchTextArea(nextTextArea, tabName);
   }
