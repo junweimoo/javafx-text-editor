@@ -68,11 +68,24 @@ public class TabsBarController implements Initializable {
     switchTab(newFileName);
   }
 
-  public void addTab(String fileName, CodeArea textArea) {
-    activeTab = fileName;
-    tabsMap.put(fileName, textArea);
-    tabNames.add(fileName);
-    switchTab(fileName);
+  public void addTab(String tabName, CodeArea textArea) {
+    activeTab = tabName;
+    tabsMap.put(tabName, textArea);
+    tabNames.add(tabName);
+    switchTab(tabName);
+  }
+
+  public void closeTab(String tabName) {
+    if (tabNames.size() == 1) System.exit(0);
+    for (int i = 0; i < tabNames.size(); i++) {
+      if (tabNames.get(i).equals(tabName)) {
+        activeTab = tabNames.get(i > 0 ? i - 1 : 1);
+        tabNames.remove(i);
+        tabsMap.remove(tabName);
+        switchTab(activeTab);
+        break;
+      }
+    }
   }
 
   public void updateTabName(String oldName, String newName) {

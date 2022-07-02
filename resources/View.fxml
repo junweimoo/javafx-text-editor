@@ -17,6 +17,7 @@
           <MenuItem onAction="#open" text="Open"/>
           <MenuItem onAction="#save" text="Save"/>
           <MenuItem onAction="#saveas" text="Save As"/>
+          <MenuItem onAction="#close" text="Close Tab"/>
         </Menu>
         <Menu text="Edit">
           <MenuItem onAction="#showFindText" text="Find"/>

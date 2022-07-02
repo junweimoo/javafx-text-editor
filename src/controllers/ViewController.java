@@ -90,6 +90,8 @@ public class ViewController implements Initializable {
             case T:
               tabsBarController.addTab();
               break;
+            case W:
+              tabsBarController.closeTab(fileName.get());
             default:
           }
         }
@@ -189,6 +191,11 @@ public class ViewController implements Initializable {
     } catch (IOException e) {
 
     }
+  }
+
+  @FXML
+  public void close() {
+    tabsBarController.closeTab(fileName.get());
   }
 
   @FXML
