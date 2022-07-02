@@ -18,56 +18,51 @@ import org.fxmisc.richtext.CodeArea;
 import org.fxmisc.richtext.LineNumberFactory;
 import org.fxmisc.richtext.model.StyleSpans;
 
-import javafx.collections.FXCollections;
-import javafx.collections.ListChangeListener;
-import javafx.collections.ObservableList;
+import javafx.beans.property.SimpleStringProperty;
+import javafx.beans.property.StringPropertyBase;
+import javafx.beans.value.ChangeListener;
+import javafx.beans.value.ObservableStringValue;
+import javafx.beans.value.ObservableValue;
 import javafx.event.EventHandler;
 import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
 import javafx.scene.Parent;
 import javafx.scene.control.Alert;
-import javafx.scene.control.Button;
+import javafx.scene.control.Alert.AlertType;
 import javafx.scene.control.ButtonType;
 import javafx.scene.control.Dialog;
 import javafx.scene.control.DialogPane;
 import javafx.scene.control.TextField;
-import javafx.scene.control.Alert.AlertType;
-import javafx.stage.FileChooser;
-import javafx.stage.Modality;
-import javafx.stage.Stage;
 import javafx.scene.input.KeyEvent;
-import javafx.scene.layout.Border;
 import javafx.scene.layout.BorderPane;
 import javafx.scene.layout.HBox;
 import javafx.scene.layout.VBox;
+import javafx.stage.FileChooser;
 import javafx.stage.FileChooser.ExtensionFilter;
+import javafx.stage.Modality;
+import javafx.stage.Stage;
 
 public class ViewController implements Initializable {
   @FXML
   private CodeArea textArea;
   @FXML
   private BorderPane borderPane;
-  private Stage stage;
-  private FileChooser fileChooser;
-  private File openFile;
-  private Map<String, Parent> modulesMap;
-  private int fontSize;
-
-  private Dialog<String> findDialog;
   @FXML
   private TextField findTextField;
-
-  @FXML
-  private VBox tabsBar;
-  private ObservableList<String> tabNames;
-  private Map<String, CodeArea> tabsMap;
-
   @FXML
   private VBox topBar;
+  private TabsBarController tabsBarController;
+  private SimpleStringProperty fileName;
+  private File openFile;
+  private Stage stage;
+  private FileChooser fileChooser;
+  private Map<String, Parent> modulesMap;
+  private int fontSize;
+  private Dialog<String> findDialog;
+  private Map<String, File> fileMap;
 
   @Override
   public void initialize(URL location, ResourceBundle resources) {
-
   }
 
   private void initTextArea() {
@@ -122,7 +117,7 @@ public class ViewController implements Initializable {
         }
       }
     });
-    
+
     window.setAlwaysOnTop(true);
     window.setOnCloseRequest(event -> {
       window.hide();
@@ -133,12 +128,13 @@ public class ViewController implements Initializable {
   private void initTabsBar() {
     HBox loadedTabsBar = (HBox) modulesMap.get("tabsBar");
     topBar.getChildren().add(loadedTabsBar);
+    tabsBarController = (TabsBarController) loadedTabsBar.getUserData();
   }
 
-  public void initModules(Map<String, Parent> map) {
-    this.modulesMap = map;    
-    tabNames = FXCollections.observableArrayList();
-    tabsMap = new HashMap<>();
+  public void init(Stage stage, Map<String, Parent> modulesMap) {
+    this.stage = stage;
+    this.modulesMap = modulesMap;
+    fileMap = new HashMap<>();
 
     fileChooser = new FileChooser();
     fileChooser.setInitialDirectory(new File(System.getProperty("user.home")));
@@ -149,41 +145,18 @@ public class ViewController implements Initializable {
     initTextArea();
     initFindDialog();
     initTabsBar();
-  }
 
-  public void setStage(Stage stage) {
-    this.stage = stage;
-  }
-
-  @FXML void newFile() {
-    if (textArea.getLength() > 0) {
-      Alert alert = new Alert(
-        AlertType.NONE,
-        "Save the current file?",
-        ButtonType.YES,
-        ButtonType.NO,
-        ButtonType.CANCEL
-      );
-
-      alert.setTitle("Confirmation");
-      alert.showAndWait();
-      ButtonType result = alert.getResult();
-
-      if (result == ButtonType.YES) {
-        save();
-      } 
-      if (result == ButtonType.NO) {
-
+    fileName = new SimpleStringProperty();
+    fileName.addListener(new ChangeListener<String>() {
+      @Override
+      public void changed(ObservableValue<? extends String> observable, String oldValue, String newValue) {
+        stage.setTitle(newValue);
+        openFile = fileMap.get(newValue);
       }
-      if (result == ButtonType.CANCEL) {
-        return;
-      }
-    }
-    textArea.clear();
-    stage.setTitle("New File");
+    });
   }
 
-  @FXML 
+  @FXML
   public void open() {
     try {
       fileChooser.setTitle("Open File");
@@ -193,18 +166,20 @@ public class ViewController implements Initializable {
         FileReader fr = new FileReader(file);
         BufferedReader in = new BufferedReader(fr);
         String str = in.readLine();
-        textArea.clear();
+        CodeArea newTextArea = new CodeArea();
+        newTextArea.setParagraphGraphicFactory(LineNumberFactory.get(newTextArea));
 
         while (str != null) {
-          textArea.appendText(str);
+          newTextArea.appendText(str);
           str = in.readLine();
-          if (str != null) textArea.appendText("\n");
+          if (str != null)
+            newTextArea.appendText("\n");
         }
 
         in.close();
-        openFile = file;
 
-        stage.setTitle(openFile.getName());
+        fileMap.put(file.getName(), file);
+        tabsBarController.addTab(file.getName(), newTextArea);
       }
     } catch (FileNotFoundException e) {
 
@@ -218,6 +193,7 @@ public class ViewController implements Initializable {
     if (openFile == null) {
       saveas();
     } else {
+      // System.out.println(openFile.getName());
       try {
         FileWriter fw = new FileWriter(openFile);
         BufferedWriter out = new BufferedWriter(fw);
@@ -244,12 +220,14 @@ public class ViewController implements Initializable {
         BufferedWriter out = new BufferedWriter(fw);
         out.write(textArea.getText());
         out.close();
-        openFile = file;
 
-        stage.setTitle(openFile.getName());
+        String oldName = fileName.get();
+        fileMap.put(file.getName(), file);
+        fileName.set(file.getName());
+        tabsBarController.updateTabName(oldName, fileName.get());
       }
     } catch (FileNotFoundException e) {
-      
+
     } catch (IOException e) {
 
     }
@@ -257,6 +235,8 @@ public class ViewController implements Initializable {
 
   @FXML
   public void increaseFont() {
+    if (fontSize > 100)
+      return;
     fontSize += 4;
     String styleStr = "-fx-font-size: " + fontSize + "px";
     textArea.setStyle(styleStr);
@@ -264,6 +244,8 @@ public class ViewController implements Initializable {
 
   @FXML
   public void decreaseFont() {
+    if (fontSize < 8)
+      return;
     fontSize -= 4;
     String styleStr = "-fx-font-size: " + fontSize + "px";
     textArea.setStyle(styleStr);
@@ -300,7 +282,7 @@ public class ViewController implements Initializable {
       index = textArea.getText().indexOf(searchStr, indexFrom);
       return index;
     } else { // not found
-      return -1; 
+      return -1;
     }
   }
 
@@ -313,7 +295,7 @@ public class ViewController implements Initializable {
     nextTextArea.setStyle(styleStr);
     textArea = nextTextArea;
     borderPane.setCenter(new VirtualizedScrollPane<CodeArea>(nextTextArea));
-    stage.setTitle(nextTabName);
+    fileName.set(nextTabName);
   }
 
   public CodeArea getTextArea() {

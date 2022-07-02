@@ -5,7 +5,6 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.ResourceBundle;
 
-import org.fxmisc.flowless.VirtualizedScrollPane;
 import org.fxmisc.richtext.CodeArea;
 import org.fxmisc.richtext.LineNumberFactory;
 
@@ -15,9 +14,7 @@ import javafx.collections.ObservableList;
 import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
 import javafx.scene.control.Button;
-import javafx.scene.layout.BorderPane;
 import javafx.scene.layout.HBox;
-import javafx.stage.Stage;
 
 public class TabsBarController implements Initializable {
   @FXML
@@ -47,6 +44,39 @@ public class TabsBarController implements Initializable {
     tabNames.add("New File 1");
   }
   
+  public void addTab() {
+    CodeArea newTextArea = new CodeArea();
+    newTextArea.setParagraphGraphicFactory(LineNumberFactory.get(newTextArea));
+    int newFileNumber = 1;
+    while (tabsMap.containsKey("New File " + newFileNumber)) {
+      newFileNumber++;
+    }
+    String newFileName = "New File " + newFileNumber;
+    tabsMap.put(newFileName, newTextArea);
+    tabNames.add(newFileName);
+    switchTab(newFileName);
+  }
+
+  public void addTab(String fileName, CodeArea textArea) {
+    tabsMap.put(fileName, textArea);
+    tabNames.add(fileName);
+    switchTab(fileName);
+  }
+
+  public void updateTabName(String oldName, String newName) {
+    CodeArea oldTextArea = tabsMap.remove(oldName);
+    tabsMap.put(newName, oldTextArea);
+    for (int i = 0; i < tabNames.size(); i++) {
+      if (tabNames.get(i).equals(oldName)) {
+        tabNames.remove(i);
+        tabNames.add(i, newName);
+
+        break;
+      }
+    }
+    updateTabs();
+  }
+
   private void updateTabs() {
     tabsBar.getChildren().clear();
     for (String tabName : tabNames) {
@@ -61,19 +91,6 @@ public class TabsBarController implements Initializable {
       addTab();
     });
     tabsBar.getChildren().add(addTabButton);
-  }
-
-  public void addTab() {
-    CodeArea newTextArea = new CodeArea();
-    newTextArea.setParagraphGraphicFactory(LineNumberFactory.get(newTextArea));
-    int newFileNumber = 1;
-    while (tabsMap.containsKey("New File " + newFileNumber)) {
-      newFileNumber++;
-    }
-    String newFileName = "New File " + newFileNumber;
-    tabsMap.put(newFileName, newTextArea);
-    tabNames.add(newFileName);
-    switchTab(newFileName);
   }
 
   private void switchTab(String tabName) {

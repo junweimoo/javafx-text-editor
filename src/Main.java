@@ -3,8 +3,6 @@ import java.net.MalformedURLException;
 import java.util.HashMap;
 import java.util.Map;
 
-import org.fxmisc.undo.impl.FixedSizeChangeQueue;
-
 import controllers.FindDialogController;
 import controllers.TabsBarController;
 import controllers.ViewController;
@@ -32,11 +30,9 @@ public class Main extends Application {
 
       Parent root = fxmlLoader.load();
       ViewController controller = fxmlLoader.getController();
-      controller.setStage(stage);
-
       Map<String, Parent> modulesMap = loadModules(controller);
 
-      controller.initModules(modulesMap);
+      controller.init(stage, modulesMap);
       
       stage.setTitle("Simple Text Editor");
       stage.setScene(new Scene(root, 800, 600));
