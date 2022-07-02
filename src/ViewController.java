@@ -7,19 +7,14 @@ import java.io.FileWriter;
 import java.io.IOException;
 import java.net.URL;
 import java.util.Collection;
-import java.util.Collections;
-import java.util.List;
 import java.util.Map;
 import java.util.ResourceBundle;
 
+import org.fxmisc.flowless.Virtualized;
 import org.fxmisc.flowless.VirtualizedScrollPane;
 import org.fxmisc.richtext.CodeArea;
-import org.fxmisc.richtext.InlineCssTextArea;
 import org.fxmisc.richtext.LineNumberFactory;
-import org.fxmisc.richtext.StyleClassedTextArea;
-import org.fxmisc.richtext.model.StyleSpan;
 import org.fxmisc.richtext.model.StyleSpans;
-import org.fxmisc.richtext.model.StyleSpansBuilder;
 
 import javafx.event.EventHandler;
 import javafx.fxml.FXML;
@@ -27,12 +22,10 @@ import javafx.fxml.Initializable;
 import javafx.scene.Parent;
 import javafx.scene.control.Dialog;
 import javafx.scene.control.DialogPane;
-import javafx.scene.control.TextArea;
 import javafx.scene.control.TextField;
 import javafx.stage.FileChooser;
 import javafx.stage.Modality;
 import javafx.stage.Stage;
-import javafx.stage.Window;
 import javafx.scene.input.KeyEvent;
 import javafx.stage.FileChooser.ExtensionFilter;
 
@@ -44,7 +37,7 @@ public class ViewController implements Initializable{
   private File openFile;
   private Map<String, Parent> modulesMap;
   private int fontSize;
-  private VirtualizedScrollPane scrollPane;
+  private VirtualizedScrollPane<CodeArea> scrollPane;
 
   private Dialog<String> findDialog;
   @FXML
@@ -76,6 +69,12 @@ public class ViewController implements Initializable{
             case MINUS:
               decreaseFont();
               break;
+            case F:
+              showFindText();
+              break;
+            case S:
+              save();
+              break;
             default:
           }
         }
@@ -92,6 +91,20 @@ public class ViewController implements Initializable{
     findDialog.setTitle("Find Text");
 
     Stage window = (Stage) pane.getScene().getWindow();
+
+    pane.setOnKeyPressed(new EventHandler<KeyEvent>() {
+      @Override
+      public void handle(KeyEvent event) {
+        switch (event.getCode()) {
+          case ESCAPE:
+            window.hide();
+            textArea.clearStyle(0, textArea.getLength());
+            break;
+          default:
+        }
+      }
+    });
+    
     window.setAlwaysOnTop(true);
     window.setOnCloseRequest(event -> {
       window.hide();
@@ -201,6 +214,11 @@ public class ViewController implements Initializable{
     findDialog.showAndWait();
   }
 
+  @FXML
+  public void toggleWrapText() {
+    textArea.setWrapText(!textArea.isWrapText());
+  }
+
   public int findNextAndHighlight(String searchStr, int indexFrom) {
     int index = findNext(searchStr, indexFrom);
 
@@ -226,15 +244,11 @@ public class ViewController implements Initializable{
     }
   }
 
-  public void highlightAllText(List<Integer> indices, int length) {
-    textArea.clearStyle(0, textArea.getLength());
-    StyleSpansBuilder<Collection<String>> spansBuilder = new StyleSpansBuilder<>();
-    int prev = 0;
-    for (int i : indices) {
-      spansBuilder.add(Collections.emptyList(), i - prev);
-      spansBuilder.add(Collections.singleton("found-text"), length);
-      prev = i + length;
-    }
-    textArea.setStyleSpans(0, spansBuilder.create());
+  public void setTextStyleSpans(StyleSpans<Collection<String>> styleSpans) {
+    textArea.setStyleSpans(0, styleSpans);
+  }
+
+  public int getTextAreaLength() {
+    return textArea.getLength();
   }
 }

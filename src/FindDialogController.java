@@ -1,7 +1,9 @@
 import java.net.URL;
-import java.util.ArrayList;
-import java.util.List;
+import java.util.Collection;
+import java.util.Collections;
 import java.util.ResourceBundle;
+
+import org.fxmisc.richtext.model.StyleSpansBuilder;
 
 import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
@@ -36,25 +38,34 @@ public class FindDialogController implements Initializable {
 
   @FXML
   public void findAllText() {
-    List<Integer> results = new ArrayList<>();
     String searchText = searchTextField.getText();
     int searchTextLength = searchText.length();
+    StyleSpansBuilder<Collection<String>> spansBuilder = new StyleSpansBuilder<>();
 
     int curIndex = viewController.findNext(searchText, -1);
+
     if (curIndex == -1) {
       infoText.setText(String.format("Can't find the text \"%s\"", searchText));
       return;
     }
+
     int firstIndex = curIndex;
-    results.add(curIndex);
+    int prev = 0;  
+
+    spansBuilder.add(Collections.emptyList(), curIndex - prev);
+    spansBuilder.add(Collections.singleton("found-text"), searchTextLength);
     curIndex += searchTextLength;
+    prev = curIndex;
 
     while ((curIndex = viewController.findNext(searchText, curIndex)) != firstIndex) {
-      curIndex = viewController.findNext(searchText, curIndex);
-      results.add(curIndex);
+      spansBuilder.add(Collections.emptyList(), curIndex - prev);
+      spansBuilder.add(Collections.singleton("found-text"), searchTextLength);
       curIndex += searchTextLength;
+      prev = curIndex;
     }
 
-    viewController.highlightAllText(results, searchTextLength);
+    spansBuilder.add(Collections.emptyList(), viewController.getTextAreaLength() - 1 - prev);
+
+    viewController.setTextStyleSpans(spansBuilder.create());
   }
 }

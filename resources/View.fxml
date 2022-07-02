@@ -24,6 +24,7 @@
           <MenuItem onAction="#increaseFont" text="Zoom In"/>
           <MenuItem onAction="#decreaseFont" text="Zoom Out"/>
         </Menu>
+        <MenuItem onAction="#toggleWrapText" text="Wrap Text"/>
       </Menu>
     </MenuBar>
   </top>
