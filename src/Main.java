@@ -3,11 +3,17 @@ import java.net.MalformedURLException;
 import java.util.HashMap;
 import java.util.Map;
 
+import org.fxmisc.undo.impl.FixedSizeChangeQueue;
+
+import controllers.FindDialogController;
+import controllers.TabsBarController;
+import controllers.ViewController;
 import javafx.application.Application;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.Parent;
 import javafx.scene.Scene;
 import javafx.scene.control.DialogPane;
+import javafx.scene.layout.HBox;
 import javafx.stage.Stage;
 
 public class Main extends Application {
@@ -43,12 +49,17 @@ public class Main extends Application {
   }
 
   private Map<String, Parent> loadModules(ViewController controller) throws IOException {      
-    FXMLLoader dialogFXMLLoader = new FXMLLoader(getClass().getResource("/FindDialog.fxml"));
-    DialogPane findDialog = dialogFXMLLoader.load();
-    ((FindDialogController) dialogFXMLLoader.getController()).setViewController(controller);
+    FXMLLoader dialogFxmlLoader = new FXMLLoader(getClass().getResource("/FindDialog.fxml"));
+    DialogPane findDialog = dialogFxmlLoader.load();
+    ((FindDialogController) dialogFxmlLoader.getController()).setViewController(controller);
+
+    FXMLLoader tabsFxmlLoader = new FXMLLoader(getClass().getResource("/TabsBar.fxml"));
+    HBox tabsBar = tabsFxmlLoader.load();
+    ((TabsBarController) tabsFxmlLoader.getController()).init(controller);
 
     Map<String, Parent> modulesMap = new HashMap<>();
     modulesMap.put("findDialog", findDialog);
+    modulesMap.put("tabsBar", tabsBar);
 
     return modulesMap;
   }

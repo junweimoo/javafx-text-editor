@@ -8,9 +8,10 @@
 <?import org.fxmisc.richtext.CodeArea?>
 <?import org.fxmisc.flowless.VirtualizedScrollPane?>
 
-<BorderPane stylesheets="@/Style.css" prefHeight="400.0" prefWidth="600.0" xmlns="http://javafx.com/javafx/8.0.121" xmlns:fx="http://javafx.com/fxml" fx:controller="ViewController">
+<BorderPane fx:id="borderPane" stylesheets="@/Style.css" prefHeight="400.0" prefWidth="600.0" xmlns="http://javafx.com/javafx/8.0.121" 
+    xmlns:fx="http://javafx.com/fxml" fx:controller="controllers.ViewController">
   <top>
-    <VBox>
+    <VBox fx:id="topBar">
       <MenuBar>
         <Menu text="File">
           <MenuItem onAction="#newFile" text="New File"/>
@@ -29,8 +30,6 @@
           <MenuItem onAction="#toggleWrapText" text="Wrap Text"/>
         </Menu>
       </MenuBar>
-      <HBox fx:id="tabsBar" styleClass="tabs-bar" prefHeight="25.0" spacing="5.0">
-      </HBox>
     </VBox>
   </top>
   <center>
