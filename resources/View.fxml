@@ -10,24 +10,28 @@
 
 <BorderPane stylesheets="@/Style.css" prefHeight="400.0" prefWidth="600.0" xmlns="http://javafx.com/javafx/8.0.121" xmlns:fx="http://javafx.com/fxml" fx:controller="ViewController">
   <top>
-    <MenuBar>
-      <Menu text="File">
-        <MenuItem onAction="#newFile" text="New File"/>
-        <MenuItem onAction="#open" text="Open"/>
-        <MenuItem onAction="#save" text="Save"/>
-        <MenuItem onAction="#saveas" text="Save As"/>
-      </Menu>
-      <Menu text="Edit">
-        <MenuItem onAction="#showFindText" text="Find"/>
-      </Menu>
-      <Menu text="View">
-        <Menu text = "Size">
-          <MenuItem onAction="#increaseFont" text="Zoom In"/>
-          <MenuItem onAction="#decreaseFont" text="Zoom Out"/>
+    <VBox>
+      <MenuBar>
+        <Menu text="File">
+          <MenuItem onAction="#newFile" text="New File"/>
+          <MenuItem onAction="#open" text="Open"/>
+          <MenuItem onAction="#save" text="Save"/>
+          <MenuItem onAction="#saveas" text="Save As"/>
         </Menu>
-        <MenuItem onAction="#toggleWrapText" text="Wrap Text"/>
-      </Menu>
-    </MenuBar>
+        <Menu text="Edit">
+          <MenuItem onAction="#showFindText" text="Find"/>
+        </Menu>
+        <Menu text="View">
+          <Menu text = "Size">
+            <MenuItem onAction="#increaseFont" text="Zoom In"/>
+            <MenuItem onAction="#decreaseFont" text="Zoom Out"/>
+          </Menu>
+          <MenuItem onAction="#toggleWrapText" text="Wrap Text"/>
+        </Menu>
+      </MenuBar>
+      <HBox fx:id="tabsBar" styleClass="tabs-bar" prefHeight="25.0" spacing="5.0">
+      </HBox>
+    </VBox>
   </top>
   <center>
     <VirtualizedScrollPane>

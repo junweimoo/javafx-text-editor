@@ -6,7 +6,11 @@ import java.io.FileReader;
 import java.io.FileWriter;
 import java.io.IOException;
 import java.net.URL;
+import java.time.format.TextStyle;
+import java.util.ArrayList;
 import java.util.Collection;
+import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 import java.util.ResourceBundle;
 
@@ -15,6 +19,9 @@ import org.fxmisc.richtext.CodeArea;
 import org.fxmisc.richtext.LineNumberFactory;
 import org.fxmisc.richtext.model.StyleSpans;
 
+import javafx.collections.FXCollections;
+import javafx.collections.ListChangeListener;
+import javafx.collections.ObservableList;
 import javafx.event.EventHandler;
 import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
@@ -30,6 +37,8 @@ import javafx.stage.FileChooser;
 import javafx.stage.Modality;
 import javafx.stage.Stage;
 import javafx.scene.input.KeyEvent;
+import javafx.scene.layout.BorderPane;
+import javafx.scene.layout.HBox;
 import javafx.stage.FileChooser.ExtensionFilter;
 
 public class ViewController implements Initializable{
@@ -46,6 +55,11 @@ public class ViewController implements Initializable{
   @FXML
   private TextField findTextField;
 
+  @FXML
+  private HBox tabsBar;
+  private ObservableList<String> tabNames;
+  private Map<String, CodeArea> tabsMap;
+
   @Override
   public void initialize(URL location, ResourceBundle resources) {
     fileChooser = new FileChooser();
@@ -54,7 +68,59 @@ public class ViewController implements Initializable{
     fileChooser.getExtensionFilters().add(extensionFilter);
     fileChooser.setInitialFileName("*.txt");
 
+    tabNames = FXCollections.observableArrayList();
+    tabsMap = new HashMap<>();
+
     initTextArea();
+    initTabsBar();
+  }
+
+  private void initTabsBar() {
+    tabNames.addListener(new ListChangeListener<>() {
+      @Override
+      public void onChanged(ListChangeListener.Change change) {
+        updateTabs();
+      }
+    });
+    tabsMap.put("New File 1", textArea);
+    tabNames.add("New File 1");
+  }
+
+  private void updateTabs() {
+    tabsBar.getChildren().clear();
+    for (String tabName : tabNames) {
+      Button tabButton = new Button(tabName);
+      tabButton.setOnAction((e) -> {
+        switchTab(tabName);
+      });
+      tabsBar.getChildren().add(tabButton);
+    }
+    Button addTabButton = new Button("+");
+    addTabButton.setOnAction((e) -> {
+      addTab();
+    });
+    tabsBar.getChildren().add(addTabButton);
+  }
+
+  public void addTab() {
+    CodeArea newTextArea = new CodeArea();
+    String styleStr = "-fx-font-size: " + fontSize + "px";
+    newTextArea.setStyle(styleStr);
+    newTextArea.setParagraphGraphicFactory(LineNumberFactory.get(newTextArea));
+    int newFileNumber = 1;
+    while (tabsMap.containsKey("New File " + newFileNumber)) {
+      newFileNumber++;
+    }
+    String newFileName = "New File " + newFileNumber;
+    tabsMap.put(newFileName, newTextArea);
+    tabNames.add(newFileName);
+    switchTab(newFileName);
+  }
+
+  private void switchTab(String tabName) {
+    textArea = tabsMap.get(tabName);
+    BorderPane borderPane = (BorderPane) stage.getScene().getRoot();
+    borderPane.setCenter(new VirtualizedScrollPane<CodeArea>(textArea));
   }
 
   private void initTextArea() {
@@ -116,26 +182,27 @@ public class ViewController implements Initializable{
     });
   }
 
-  public void setStage(Stage stage) {
-    this.stage = stage;
-  }
-
   public void initModules(Map<String, Parent> map) {
     this.modulesMap = map;
 
     initFindDialog();
   }
 
+  public void setStage(Stage stage) {
+    this.stage = stage;
+  }
+
   @FXML void newFile() {
     if (textArea.getLength() > 0) {
       Alert alert = new Alert(
-        AlertType.CONFIRMATION,
+        AlertType.NONE,
         "Save the current file?",
         ButtonType.YES,
         ButtonType.NO,
         ButtonType.CANCEL
       );
 
+      alert.setTitle("Confirmation");
       alert.showAndWait();
       ButtonType result = alert.getResult();
 
