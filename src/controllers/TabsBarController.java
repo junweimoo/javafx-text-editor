@@ -1,117 +1,59 @@
 package controllers;
 
 import java.net.URL;
-import java.util.HashMap;
-import java.util.Map;
+import java.util.Iterator;
 import java.util.ResourceBundle;
 
-import org.fxmisc.richtext.CodeArea;
-import org.fxmisc.richtext.LineNumberFactory;
-
-import javafx.collections.FXCollections;
-import javafx.collections.ListChangeListener;
-import javafx.collections.ObservableList;
 import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
 import javafx.scene.control.Button;
 import javafx.scene.control.ToggleButton;
 import javafx.scene.control.ToggleGroup;
 import javafx.scene.layout.HBox;
+import models.TextFile;
 
 public class TabsBarController implements Initializable {
   @FXML
   private HBox tabsBar;
-  private ObservableList<String> tabNames;
-  private Map<String, CodeArea> tabsMap;
   private ViewController viewController;
   private ToggleGroup toggleGroup;
-  private String activeTab;
-
+  private TextFile activeTextFile;
   @Override
   public void initialize(URL url, ResourceBundle resources) {
     
   }
 
   public void init(ViewController viewController) {
-    tabNames = FXCollections.observableArrayList();
-    tabsMap = new HashMap<>();
     this.viewController = viewController;
-
-    tabNames.addListener(new ListChangeListener<String>() {
-      @Override
-      public void onChanged(ListChangeListener.Change<? extends String> change) {
-        buildTabs();
-      }
-    });
-
     toggleGroup = new ToggleGroup();
     toggleGroup.selectedToggleProperty().addListener((obs, oldVal, newVal) -> {
       if (newVal == null) oldVal.setSelected(true);
     });
-
-    activeTab = "New File 1";
-    tabsMap.put("New File 1", viewController.getTextArea());
-    tabNames.add("New File 1");
   }
   
   public void addTab() {
-    CodeArea newTextArea = new CodeArea();
-    newTextArea.setParagraphGraphicFactory(LineNumberFactory.get(newTextArea));
-    int newFileNumber = 1;
-    while (tabsMap.containsKey("New File " + newFileNumber)) {
-      newFileNumber++;
-    }
-    String newFileName = "New File " + newFileNumber;
-    activeTab = newFileName;
-    tabsMap.put(newFileName, newTextArea);
-    tabNames.add(newFileName);
-    switchTab(newFileName);
+    TextFile nextTextFile = new TextFile();
+    switchTab(nextTextFile);
   }
 
-  public void addTab(String tabName, CodeArea textArea) {
-    activeTab = tabName;
-    tabsMap.put(tabName, textArea);
-    tabNames.add(tabName);
-    switchTab(tabName);
-  }
+  public void closeTab(TextFile textFile) {
+    if (TextFile.getNumOpenFiles() == 1) System.exit(0);
 
-  public void closeTab(String tabName) {
-    if (tabNames.size() == 1) System.exit(0);
-    for (int i = 0; i < tabNames.size(); i++) {
-      if (tabNames.get(i).equals(tabName)) {
-        activeTab = tabNames.get(i > 0 ? i - 1 : 1);
-        tabNames.remove(i);
-        tabsMap.remove(tabName);
-        switchTab(activeTab);
-        break;
-      }
-    }
-  }
-
-  public void updateTabName(String oldName, String newName) {
-    activeTab = newName;
-    CodeArea oldTextArea = tabsMap.remove(oldName);
-    tabsMap.put(newName, oldTextArea);
-    for (int i = 0; i < tabNames.size(); i++) {
-      if (tabNames.get(i).equals(oldName)) {
-        tabNames.remove(i);
-        tabNames.add(i, newName);
-
-        break;
-      }
-    }
-    buildTabs();
+    TextFile nextFile = TextFile.removeTextFile(textFile);
+    switchTab(nextFile);
   }
 
   private void buildTabs() {
     tabsBar.getChildren().clear();
-    for (String tabName : tabNames) {
-      ToggleButton tabButton = new ToggleButton(tabName);
+    Iterator<TextFile> it = TextFile.getIterator();
+    while (it.hasNext()) {
+      TextFile tf = it.next();
+      ToggleButton tabButton = new ToggleButton(tf.getName());
       tabButton.setOnAction((e) -> {
-        switchTab(tabName);
+        switchTab(tf);
       });
       tabButton.setToggleGroup(toggleGroup);
-      if (tabName.equals(activeTab)) tabButton.setSelected(true);
+      if (tf == activeTextFile) tabButton.setSelected(true);
       tabsBar.getChildren().add(tabButton);
     }
     Button addTabButton = new Button("+");
@@ -121,9 +63,10 @@ public class TabsBarController implements Initializable {
     tabsBar.getChildren().add(addTabButton);
   }
 
-  private void switchTab(String tabName) {
-    activeTab = tabName;
-    CodeArea nextTextArea = tabsMap.get(tabName);
-    viewController.switchTextArea(nextTextArea, tabName);
+  public void switchTab(TextFile textFile) {
+    if (textFile == activeTextFile) return;
+    activeTextFile = textFile;
+    buildTabs();
+    viewController.switchTextFile(textFile);
   }
 }

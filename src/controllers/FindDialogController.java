@@ -25,7 +25,7 @@ public class FindDialogController implements Initializable {
     searchIndex = -1;
   }
 
-  public void setViewController(ViewController viewController) {
+  public void init(ViewController viewController) {
     this.viewController = viewController;
   }
 

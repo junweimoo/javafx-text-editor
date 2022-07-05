@@ -9,27 +9,17 @@ import java.io.FileWriter;
 import java.io.IOException;
 import java.net.URL;
 import java.util.Collection;
-import java.util.HashMap;
 import java.util.Map;
 import java.util.ResourceBundle;
 
 import org.fxmisc.flowless.VirtualizedScrollPane;
 import org.fxmisc.richtext.CodeArea;
-import org.fxmisc.richtext.LineNumberFactory;
 import org.fxmisc.richtext.model.StyleSpans;
 
-import javafx.beans.property.SimpleStringProperty;
-import javafx.beans.property.StringPropertyBase;
-import javafx.beans.value.ChangeListener;
-import javafx.beans.value.ObservableStringValue;
-import javafx.beans.value.ObservableValue;
 import javafx.event.EventHandler;
 import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
 import javafx.scene.Parent;
-import javafx.scene.control.Alert;
-import javafx.scene.control.Alert.AlertType;
-import javafx.scene.control.ButtonType;
 import javafx.scene.control.Dialog;
 import javafx.scene.control.DialogPane;
 import javafx.scene.control.TextField;
@@ -41,6 +31,7 @@ import javafx.stage.FileChooser;
 import javafx.stage.FileChooser.ExtensionFilter;
 import javafx.stage.Modality;
 import javafx.stage.Stage;
+import models.TextFile;
 
 public class ViewController implements Initializable {
   @FXML
@@ -51,54 +42,17 @@ public class ViewController implements Initializable {
   private TextField findTextField;
   @FXML
   private VBox topBar;
-  private TabsBarController tabsBarController;
-  private SimpleStringProperty fileName;
-  private File openFile;
   private Stage stage;
+  private Dialog<String> findDialog;
   private FileChooser fileChooser;
+  private TabsBarController tabsBarController;
   private Map<String, Parent> modulesMap;
   private int fontSize;
-  private Dialog<String> findDialog;
-  private Map<String, File> fileMap;
+  private TextFile openTextFile;
 
   @Override
   public void initialize(URL location, ResourceBundle resources) {
-  }
 
-  private void initTextArea() {
-    this.fontSize = 16;
-    String styleStr = "-fx-font-size: " + fontSize + "px";
-    textArea.setStyle(styleStr);
-
-    borderPane.setOnKeyPressed(new EventHandler<KeyEvent>() {
-      @Override
-      public void handle(KeyEvent event) {
-        if (event.isControlDown()) {
-          switch (event.getCode()) {
-            case EQUALS:
-              increaseFont();
-              break;
-            case MINUS:
-              decreaseFont();
-              break;
-            case F:
-              showFindText();
-              break;
-            case S:
-              save();
-              break;
-            case T:
-              tabsBarController.addTab();
-              break;
-            case W:
-              tabsBarController.closeTab(fileName.get());
-            default:
-          }
-        }
-      }
-    });
-
-    textArea.setParagraphGraphicFactory(LineNumberFactory.get(textArea));
   }
 
   private void initFindDialog() {
@@ -136,29 +90,56 @@ public class ViewController implements Initializable {
     tabsBarController = (TabsBarController) loadedTabsBar.getUserData();
   }
 
-  public void init(Stage stage, Map<String, Parent> modulesMap) {
-    this.stage = stage;
-    this.modulesMap = modulesMap;
-    fileMap = new HashMap<>();
+  private void initHotkeys() {
+    borderPane.setOnKeyPressed(new EventHandler<KeyEvent>() {
+      @Override
+      public void handle(KeyEvent event) {
+        if (event.isControlDown()) {
+          switch (event.getCode()) {
+            case EQUALS:
+              increaseFont();
+              break;
+            case MINUS:
+              decreaseFont();
+              break;
+            case F:
+              showFindText();
+              break;
+            case S:
+              save();
+              break;
+            case T:
+              tabsBarController.addTab();
+              break;
+            case W:
+              tabsBarController.closeTab(openTextFile);
+            default:
+          }
+        }
+      }
+    });
+  }
 
+  public void initFileChooser() {
     fileChooser = new FileChooser();
     fileChooser.setInitialDirectory(new File(System.getProperty("user.home")));
     ExtensionFilter extensionFilter = new ExtensionFilter("Text files (*.txt)", "*.txt");
     fileChooser.getExtensionFilters().add(extensionFilter);
     fileChooser.setInitialFileName("*.txt");
+  }
 
-    initTextArea();
+  public void init(Stage stage, Map<String, Parent> modulesMap) {
+    this.stage = stage;
+    this.modulesMap = modulesMap;
+    this.fontSize = 16;
+    this.openTextFile = new TextFile();
+
     initFindDialog();
+    initHotkeys();
+    initFileChooser();
     initTabsBar();
 
-    fileName = new SimpleStringProperty();
-    fileName.addListener(new ChangeListener<String>() {
-      @Override
-      public void changed(ObservableValue<? extends String> observable, String oldValue, String newValue) {
-        stage.setTitle(newValue);
-        openFile = fileMap.get(newValue);
-      }
-    });
+    tabsBarController.switchTab(openTextFile);
   }
 
   @FXML
@@ -167,25 +148,31 @@ public class ViewController implements Initializable {
       fileChooser.setTitle("Open File");
       File file = fileChooser.showOpenDialog(stage);
 
-      if (file != null) {
-        FileReader fr = new FileReader(file);
-        BufferedReader in = new BufferedReader(fr);
-        String str = in.readLine();
-        CodeArea newTextArea = new CodeArea();
-        newTextArea.setParagraphGraphicFactory(LineNumberFactory.get(newTextArea));
+      if (file == null) return;
 
-        while (str != null) {
-          newTextArea.appendText(str);
-          str = in.readLine();
-          if (str != null)
-            newTextArea.appendText("\n");
-        }
-
-        in.close();
-
-        fileMap.put(file.getName(), file);
-        tabsBarController.addTab(file.getName(), newTextArea);
+      TextFile openTextFile = TextFile.getTextFileByPath(file.getAbsolutePath());
+      if (openTextFile != null) {
+        tabsBarController.switchTab(openTextFile);
+        return;
       }
+
+      TextFile newTextFile = new TextFile(file, file.getName());
+
+      FileReader fr = new FileReader(file);
+      BufferedReader in = new BufferedReader(fr);
+      String str = in.readLine();
+      CodeArea newTextArea = newTextFile.getTextArea();
+
+      while (str != null) {
+        newTextArea.appendText(str);
+        str = in.readLine();
+        if (str != null) newTextArea.appendText("\n");
+      }
+
+      in.close();
+
+      openTextFile = newTextFile;
+      tabsBarController.switchTab(openTextFile);
     } catch (FileNotFoundException e) {
 
     } catch (IOException e) {
@@ -195,15 +182,16 @@ public class ViewController implements Initializable {
 
   @FXML
   public void close() {
-    tabsBarController.closeTab(fileName.get());
+    tabsBarController.closeTab(openTextFile);
   }
 
   @FXML
   public void save() {
-    if (openFile == null) {
+    if (openTextFile.getFile() == null) {
       saveas();
     } else {
       try {
+        File openFile = openTextFile.getFile();
         FileWriter fw = new FileWriter(openFile);
         BufferedWriter out = new BufferedWriter(fw);
         out.write(textArea.getText());
@@ -225,15 +213,15 @@ public class ViewController implements Initializable {
       }
 
       if (file != null) {
+        openTextFile.setFile(file);
+        openTextFile.setName(file.getName());
+
         FileWriter fw = new FileWriter(file);
         BufferedWriter out = new BufferedWriter(fw);
         out.write(textArea.getText());
         out.close();
 
-        String oldName = fileName.get();
-        fileMap.put(file.getName(), file);
-        fileName.set(file.getName());
-        tabsBarController.updateTabName(oldName, fileName.get());
+        tabsBarController.switchTab(openTextFile);
       }
     } catch (FileNotFoundException e) {
 
@@ -299,15 +287,18 @@ public class ViewController implements Initializable {
     textArea.setStyleSpans(0, styleSpans);
   }
 
-  public void switchTextArea(CodeArea nextTextArea, String nextTabName) {
-    String styleStr = "-fx-font-size: " + fontSize + "px";
-    nextTextArea.setStyle(styleStr);
-    textArea = nextTextArea;
-    borderPane.setCenter(new VirtualizedScrollPane<CodeArea>(nextTextArea));
-    fileName.set(nextTabName);
-  }
-
   public CodeArea getTextArea() {
     return textArea;
+  }
+
+  public void switchTextFile(TextFile nextTextFile) {
+    openTextFile = nextTextFile;
+    String styleStr = "-fx-font-size: " + fontSize + "px";
+    nextTextFile.getTextArea().setStyle(styleStr);
+    textArea = nextTextFile.getTextArea();
+    File nextFile = nextTextFile.getFile();
+    String newTitle = nextFile != null ? nextFile.getAbsolutePath() : nextTextFile.getName();
+    stage.setTitle(newTitle);
+    borderPane.setCenter(new VirtualizedScrollPane<CodeArea>(textArea));
   }
 }

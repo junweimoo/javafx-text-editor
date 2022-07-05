@@ -47,7 +47,7 @@ public class Main extends Application {
   private Map<String, Parent> loadModules(ViewController controller) throws IOException {      
     FXMLLoader dialogFxmlLoader = new FXMLLoader(getClass().getResource("/FindDialog.fxml"));
     DialogPane findDialog = dialogFxmlLoader.load();
-    ((FindDialogController) dialogFxmlLoader.getController()).setViewController(controller);
+    ((FindDialogController) dialogFxmlLoader.getController()).init(controller);
 
     FXMLLoader tabsFxmlLoader = new FXMLLoader(getClass().getResource("/TabsBar.fxml"));
     HBox tabsBar = tabsFxmlLoader.load();
