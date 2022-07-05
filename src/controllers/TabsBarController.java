@@ -10,6 +10,7 @@ import javafx.scene.control.Button;
 import javafx.scene.control.ToggleButton;
 import javafx.scene.control.ToggleGroup;
 import javafx.scene.layout.HBox;
+import models.TabHistory;
 import models.TextFile;
 
 public class TabsBarController implements Initializable {
@@ -18,32 +19,39 @@ public class TabsBarController implements Initializable {
   private ViewController viewController;
   private ToggleGroup toggleGroup;
   private TextFile activeTextFile;
+  private TabHistory tabHistory;
+
   @Override
   public void initialize(URL url, ResourceBundle resources) {
-    
+
   }
 
   public void init(ViewController viewController) {
     this.viewController = viewController;
+    this.tabHistory = new TabHistory();
     toggleGroup = new ToggleGroup();
     toggleGroup.selectedToggleProperty().addListener((obs, oldVal, newVal) -> {
-      if (newVal == null) oldVal.setSelected(true);
+      if (newVal == null)
+        oldVal.setSelected(true);
     });
   }
-  
+
   public void addTab() {
     TextFile nextTextFile = new TextFile();
     switchTab(nextTextFile);
   }
 
   public void closeTab(TextFile textFile) {
-    if (TextFile.getNumOpenFiles() == 1) System.exit(0);
+    if (TextFile.getNumOpenFiles() == 1)
+      System.exit(0);
 
-    TextFile nextFile = TextFile.removeTextFile(textFile);
+    TextFile.removeTextFile(textFile);
+    tabHistory.remove(textFile);
+    TextFile nextFile = tabHistory.getLastOpened();
     switchTab(nextFile);
   }
 
-  private void buildTabs() {
+  public void buildTabs() {
     tabsBar.getChildren().clear();
     Iterator<TextFile> it = TextFile.getIterator();
     while (it.hasNext()) {
@@ -52,19 +60,23 @@ public class TabsBarController implements Initializable {
       tabButton.setOnAction((e) -> {
         switchTab(tf);
       });
+      tabButton.getStyleClass().add("tab-button");
       tabButton.setToggleGroup(toggleGroup);
-      if (tf == activeTextFile) tabButton.setSelected(true);
+      if (tf == activeTextFile)
+        tabButton.setSelected(true);
       tabsBar.getChildren().add(tabButton);
     }
     Button addTabButton = new Button("+");
     addTabButton.setOnAction((e) -> {
       addTab();
     });
+    addTabButton.getStyleClass().add("tab-button");
     tabsBar.getChildren().add(addTabButton);
   }
 
   public void switchTab(TextFile textFile) {
-    if (textFile == activeTextFile) return;
+    if (TextFile.isOpen(activeTextFile)) 
+      tabHistory.add(activeTextFile);
     activeTextFile = textFile;
     buildTabs();
     viewController.switchTextFile(textFile);

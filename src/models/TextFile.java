@@ -30,10 +30,15 @@ public class TextFile {
     return nameMap.get(path);
   }
 
-  public static TextFile removeTextFile(TextFile textFile) {
-    if (openTextFiles.size() == 1 || !openTextFiles.contains(textFile)) 
-      return null;
+  public static boolean isOpen(TextFile tf) {
+    return openTextFiles.contains(tf);
+  }
 
+  public static void removeTextFile(TextFile textFile) {
+    if (openTextFiles.size() == 1 || !openTextFiles.contains(textFile)) 
+      return;
+
+    /*
     Iterator<TextFile> it = getIterator();
     TextFile nextFile = null;
     TextFile tf = it.next();
@@ -48,6 +53,7 @@ public class TextFile {
       }
       nextFile = tf;
     }
+    */
 
     if (textFile.getFile() == null) {
       nameMap.remove(textFile.getName());
@@ -55,7 +61,6 @@ public class TextFile {
       nameMap.remove(textFile.getFile().getAbsolutePath());
     }
     openTextFiles.remove(textFile);
-    return nextFile;
   }
 
   public TextFile(File file, String name) {

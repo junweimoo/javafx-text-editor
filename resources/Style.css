@@ -2,6 +2,26 @@
   -rtfx-background-color: lightgreen;
 }
 
+.menu-bar {
+  -fx-background-color: white;
+}
+
 .tabs-bar {
-  -fx-padding: 0 5 0 5;
+  -fx-padding: 5 5 0 5;
+}
+
+.tab-button {
+  -fx-background-color: lightgray;
+}
+
+.tab-button:selected {
+  -fx-background-color: white;
+}
+
+.tab-button:hover {
+  -fx-background-color: rgb(233, 233, 233);
+}
+
+.tab-button:hover:selected {
+  -fx-background-color: white;
 }

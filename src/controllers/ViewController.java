@@ -90,35 +90,38 @@ public class ViewController implements Initializable {
     tabsBarController = (TabsBarController) loadedTabsBar.getUserData();
   }
 
-  private void initHotkeys() {
-    borderPane.setOnKeyPressed(new EventHandler<KeyEvent>() {
-      @Override
-      public void handle(KeyEvent event) {
-        if (event.isControlDown()) {
-          switch (event.getCode()) {
-            case EQUALS:
-              increaseFont();
-              break;
-            case MINUS:
-              decreaseFont();
-              break;
-            case F:
-              showFindText();
-              break;
-            case S:
-              save();
-              break;
-            case T:
-              tabsBarController.addTab();
-              break;
-            case W:
-              tabsBarController.closeTab(openTextFile);
-            default:
-          }
-        }
-      }
-    });
-  }
+  /*
+   * private void initHotkeys() {
+   * borderPane.setOnKeyPressed(new EventHandler<KeyEvent>() {
+   * 
+   * @Override
+   * public void handle(KeyEvent event) {
+   * if (event.isControlDown()) {
+   * switch (event.getCode()) {
+   * case EQUALS:
+   * increaseFont();
+   * break;
+   * case MINUS:
+   * decreaseFont();
+   * break;
+   * case F:
+   * showFindText();
+   * break;
+   * case S:
+   * save();
+   * break;
+   * case T:
+   * tabsBarController.addTab();
+   * break;
+   * case W:
+   * tabsBarController.closeTab(openTextFile);
+   * default:
+   * }
+   * }
+   * }
+   * });
+   * }
+   */
 
   public void initFileChooser() {
     fileChooser = new FileChooser();
@@ -135,7 +138,7 @@ public class ViewController implements Initializable {
     this.openTextFile = new TextFile();
 
     initFindDialog();
-    initHotkeys();
+    // initHotkeys();
     initFileChooser();
     initTabsBar();
 
@@ -148,7 +151,8 @@ public class ViewController implements Initializable {
       fileChooser.setTitle("Open File");
       File file = fileChooser.showOpenDialog(stage);
 
-      if (file == null) return;
+      if (file == null)
+        return;
 
       TextFile openTextFile = TextFile.getTextFileByPath(file.getAbsolutePath());
       if (openTextFile != null) {
@@ -166,7 +170,8 @@ public class ViewController implements Initializable {
       while (str != null) {
         newTextArea.appendText(str);
         str = in.readLine();
-        if (str != null) newTextArea.appendText("\n");
+        if (str != null)
+          newTextArea.appendText("\n");
       }
 
       in.close();
@@ -231,6 +236,11 @@ public class ViewController implements Initializable {
   }
 
   @FXML
+  public void newtab() {
+    tabsBarController.addTab();
+  }
+
+  @FXML
   public void increaseFont() {
     if (fontSize > 100)
       return;
@@ -270,6 +280,9 @@ public class ViewController implements Initializable {
   }
 
   public int findNext(String searchStr, int indexFrom) {
+    if (textArea.getLength() == 0)
+      return -1;
+
     int index = textArea.getText().indexOf(searchStr, indexFrom);
 
     if (index != -1) { // found

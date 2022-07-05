@@ -5,6 +5,7 @@
 <?import javafx.scene.control.*?>
 <?import javafx.scene.layout.*?>
 <?import javafx.scene.text.*?>
+<?import javafx.scene.input.*?>
 <?import org.fxmisc.richtext.CodeArea?>
 <?import org.fxmisc.flowless.VirtualizedScrollPane?>
 
@@ -12,22 +13,57 @@
     xmlns:fx="http://javafx.com/fxml" fx:controller="controllers.ViewController">
   <top>
     <VBox fx:id="topBar">
-      <MenuBar>
+      <MenuBar styleClass="menu-bar">
         <Menu text="File">
-          <MenuItem onAction="#open" text="Open"/>
-          <MenuItem onAction="#save" text="Save"/>
-          <MenuItem onAction="#saveas" text="Save As"/>
-          <MenuItem onAction="#close" text="Close Tab"/>
+          <MenuItem onAction="#open" text="Open">
+            <accelerator>
+              <KeyCodeCombination alt="UP" code="O" control="DOWN" meta="UP" shift="UP" shortcut="UP" />
+            </accelerator>
+          </MenuItem>
+          <MenuItem onAction="#save" text="Save">
+            <accelerator>
+              <KeyCodeCombination alt="UP" code="S" control="DOWN" meta="UP" shift="UP" shortcut="UP" />
+            </accelerator>
+          </MenuItem>
+          <MenuItem onAction="#saveas" text="Save As">
+            <accelerator>
+              <KeyCodeCombination alt="UP" code="S" control="DOWN" meta="UP" shift="DOWN" shortcut="UP" />
+            </accelerator>
+          </MenuItem>
+          <MenuItem onAction="#newtab" text="New Tab">
+            <accelerator>
+              <KeyCodeCombination alt="UP" code="T" control="DOWN" meta="UP" shift="UP" shortcut="UP" />
+            </accelerator>
+          </MenuItem>
+          <MenuItem onAction="#close" text="Close Tab">
+            <accelerator>
+              <KeyCodeCombination alt="UP" code="W" control="DOWN" meta="UP" shift="UP" shortcut="UP" />
+            </accelerator>
+          </MenuItem>
         </Menu>
         <Menu text="Edit">
-          <MenuItem onAction="#showFindText" text="Find"/>
+          <MenuItem onAction="#showFindText" text="Find">
+            <accelerator>
+              <KeyCodeCombination alt="UP" code="F" control="DOWN" meta="UP" shift="UP" shortcut="UP" />
+            </accelerator>
+          </MenuItem>
         </Menu>
         <Menu text="View">
-          <Menu text = "Size">
-            <MenuItem onAction="#increaseFont" text="Zoom In"/>
-            <MenuItem onAction="#decreaseFont" text="Zoom Out"/>
-          </Menu>
-          <MenuItem onAction="#toggleWrapText" text="Wrap Text"/>
+          <MenuItem onAction="#increaseFont" text="Zoom In">
+            <accelerator>
+              <KeyCodeCombination alt="UP" code="EQUALS" control="DOWN" meta="UP" shift="UP" shortcut="UP" />
+            </accelerator>
+          </MenuItem>
+          <MenuItem onAction="#decreaseFont" text="Zoom Out">
+            <accelerator>
+              <KeyCodeCombination alt="UP" code="MINUS" control="DOWN" meta="UP" shift="UP" shortcut="UP" />
+            </accelerator>
+          </MenuItem>
+          <MenuItem onAction="#toggleWrapText" text="Wrap Text">
+            <accelerator>
+              <KeyCodeCombination alt="UP" code="L" control="DOWN" meta="UP" shift="UP" shortcut="UP" />
+            </accelerator>
+          </MenuItem>
         </Menu>
       </MenuBar>
     </VBox>
