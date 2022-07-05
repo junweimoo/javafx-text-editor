@@ -15,6 +15,8 @@ import javafx.scene.text.Text;
 public class FindDialogController implements Initializable {
   @FXML
   private TextField searchTextField;
+  @FXML
+  private TextField replacementTextField;
   @FXML 
   private Text infoText;
   private ViewController viewController;
@@ -32,6 +34,7 @@ public class FindDialogController implements Initializable {
   @FXML
   public void findText() {
     String searchText = searchTextField.getText();
+    searchIndex = viewController.getTextArea().getCaretPosition();
     searchIndex = viewController.findNextAndHighlight(searchText, searchIndex);
     if (searchIndex == -1) {
       infoText.setText(String.format("Can't find the text \"%s\"", searchText));
@@ -63,6 +66,51 @@ public class FindDialogController implements Initializable {
       spansBuilder.add(Collections.emptyList(), curIndex - prev);
       spansBuilder.add(Collections.singleton("found-text"), searchTextLength);
       curIndex += searchTextLength;
+      prev = curIndex;
+    }
+
+    spansBuilder.add(Collections.emptyList(), viewController.getTextArea().getLength() - 1 - prev);
+
+    viewController.setTextStyleSpans(spansBuilder.create());
+  }
+
+  @FXML
+  public void replaceText() {
+    String searchText = searchTextField.getText();
+    String replacementText = replacementTextField.getText();
+    searchIndex = viewController.getTextArea().getCaretPosition();
+    searchIndex = viewController.findNextAndReplace(searchText, replacementText, searchIndex);
+    if (searchIndex == -1) {
+      infoText.setText(String.format("Can't find the text \"%s\"", searchText));
+    }
+  }
+
+  @FXML
+  public void replaceAllText() {
+    String searchText = searchTextField.getText();
+    String replacementText = replacementTextField.getText();
+    int replTextLength = replacementText.length();
+    StyleSpansBuilder<Collection<String>> spansBuilder = new StyleSpansBuilder<>();
+
+    int curIndex = viewController.findNextAndReplace(searchText, replacementText, -1);
+
+    if (curIndex == -1) {
+      infoText.setText(String.format("Can't find the text \"%s\"", searchText));
+      return;
+    }
+
+    int firstIndex = curIndex;
+    int prev = 0;
+
+    spansBuilder.add(Collections.emptyList(), curIndex - prev);
+    spansBuilder.add(Collections.singleton("found-text"), replTextLength);
+    curIndex += replTextLength;
+    prev = curIndex;
+
+    while ((curIndex = viewController.findNextAndReplace(searchText, replacementText, curIndex)) != firstIndex && curIndex != -1) {
+      spansBuilder.add(Collections.emptyList(), curIndex - prev);
+      spansBuilder.add(Collections.singleton("found-text"), replTextLength);
+      curIndex += replTextLength;
       prev = curIndex;
     }
 

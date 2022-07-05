@@ -34,8 +34,8 @@ public class Main extends Application {
 
       controller.init(stage, modulesMap);
       
-      stage.setTitle("Simple Text Editor");
-      stage.setScene(new Scene(root, 800, 600));
+      stage.setTitle("JavaFX Text Editor");
+      stage.setScene(new Scene(root, 1000, 750));
       stage.show();
     } catch (MalformedURLException e) {
       System.out.println(e);

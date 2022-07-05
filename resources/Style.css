@@ -7,7 +7,7 @@
 }
 
 .tabs-bar {
-  -fx-padding: 5 5 0 5;
+  -fx-padding: 5 5 -1 5;
 }
 
 .tab-button {

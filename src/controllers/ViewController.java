@@ -279,6 +279,18 @@ public class ViewController implements Initializable {
     }
   }
 
+  public int findNextAndReplace(String searchStr, String replString, int indexFrom) {
+    int index = findNext(searchStr, indexFrom);
+
+    if (index != -1) {
+      textArea.replaceText(index, index + searchStr.length(), replString);
+      textArea.selectRange(index, index + replString.length());
+      return index;
+    } else {
+      return -1;
+    }
+  }
+
   public int findNext(String searchStr, int indexFrom) {
     if (textArea.getLength() == 0)
       return -1;
@@ -287,7 +299,7 @@ public class ViewController implements Initializable {
 
     if (index != -1) { // found
       return index;
-    } else if (indexFrom != -1) { // reached last match
+    } else if (indexFrom != -1) { // try searching from top
       indexFrom = -1;
       index = textArea.getText().indexOf(searchStr, indexFrom);
       return index;

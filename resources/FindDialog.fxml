@@ -7,19 +7,31 @@
 <?import javafx.scene.text.*?>
 
 <DialogPane xmlns="http://javafx.com/javafx/8.0.121" xmlns:fx="http://javafx.com/fxml" 
-    fx:controller="controllers.FindDialogController">
+    fx:controller="controllers.FindDialogController" stylesheets="@/Style.css">
   <header>
   </header>
   <content>
-    <VBox spacing="5.0">
-      <HBox spacing="5.0">
-        <TextField fx:id="searchTextField"/>
-        <Button onAction="#findText" text="Find Next"/>
-        <Button onAction="#findAllText" text="Find All"/>
-      </HBox>
-      <HBox>
+    <HBox>
+      <VBox spacing="5.0">
+        <HBox spacing="5.0">
+          <Label prefWidth="80.0" text="Search for: "/>
+          <TextField prefWidth="250.0" fx:id="searchTextField"/>
+        </HBox>
+        <HBox spacing="5.0"> 
+          <Label prefWidth="80.0" text="Replace with: "/>
+          <TextField prefWidth="250.0" fx:id="replacementTextField"/>
+        </HBox>
         <Text fx:id="infoText"></Text>
-      </HBox>
-    </VBox>
+      </VBox>
+      <VBox prefWidth="25.0">
+
+      </VBox>
+      <VBox spacing="5.0">
+        <Button prefWidth="120.0" onAction="#findText" text="Find Next"/>
+        <Button prefWidth="120.0" onAction="#findAllText" text="Find All"/>
+        <Button prefWidth="120.0" onAction="#replaceText" text="Replace Next"/>
+        <Button prefWidth="120.0" onAction="#replaceAllText" text="Replace All"/>
+      </VBox>
+    </HBox>
   </content>
 </DialogPane>
