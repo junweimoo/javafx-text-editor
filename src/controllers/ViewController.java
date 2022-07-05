@@ -10,6 +10,7 @@ import java.io.IOException;
 import java.net.URL;
 import java.util.Collection;
 import java.util.Map;
+import java.util.Random;
 import java.util.ResourceBundle;
 
 import org.fxmisc.flowless.VirtualizedScrollPane;
@@ -22,6 +23,7 @@ import javafx.fxml.Initializable;
 import javafx.scene.Parent;
 import javafx.scene.control.Dialog;
 import javafx.scene.control.DialogPane;
+import javafx.scene.control.IndexRange;
 import javafx.scene.control.TextField;
 import javafx.scene.input.KeyEvent;
 import javafx.scene.layout.BorderPane;
@@ -266,6 +268,40 @@ public class ViewController implements Initializable {
   @FXML
   public void toggleWrapText() {
     textArea.setWrapText(!textArea.isWrapText());
+  }
+
+  @FXML
+  public void toUppercase() {
+    IndexRange range = textArea.getSelection();
+    String original = textArea.getSelectedText();
+    String lower = original.toUpperCase();
+    textArea.replaceSelection(lower);
+    textArea.selectRange(range.getStart(), range.getEnd());
+  }
+
+  @FXML 
+  void toLowercase() {
+    IndexRange range = textArea.getSelection();
+    String original = textArea.getSelectedText();
+    String lower = original.toLowerCase();
+    textArea.replaceSelection(lower);
+    textArea.selectRange(range.getStart(), range.getEnd());
+  }
+
+  @FXML
+  void toRandomcase() {
+    IndexRange range = textArea.getSelection();
+    String original = textArea.getSelectedText().toLowerCase();
+    Random rng = new Random();
+    StringBuilder sb = new StringBuilder();
+    for (char c : original.toCharArray()) {
+      if (c >= 97 && c <= 122 && rng.nextInt(2) == 1) {
+        c -= 32;
+      }
+      sb.append(c);
+    }
+    textArea.replaceSelection(sb.toString());
+    textArea.selectRange(range.getStart(), range.getEnd());
   }
 
   public int findNextAndHighlight(String searchStr, int indexFrom) {

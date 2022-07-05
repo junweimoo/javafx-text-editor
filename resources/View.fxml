@@ -47,6 +47,14 @@
               <KeyCodeCombination alt="UP" code="F" control="DOWN" meta="UP" shift="UP" shortcut="UP" />
             </accelerator>
           </MenuItem>
+          <Menu text="Change Case">
+            <MenuItem onAction="#toLowercase" text="To lowercase">
+            </MenuItem>
+            <MenuItem onAction="#toUppercase" text="To UPPERCASE">
+            </MenuItem>
+            <MenuItem onAction="#toRandomcase" text="To RaNDomCaSe">
+            </MenuItem>
+          </Menu>
         </Menu>
         <Menu text="View">
           <MenuItem onAction="#increaseFont" text="Zoom In">
